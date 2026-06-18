@@ -1,0 +1,33 @@
+Senior Data Engineer — Stripe (Remote / San Francisco, CA)
+
+About the role:
+Stripe is looking for a Senior Data Engineer to join our Data Platform team.
+You'll be responsible for designing, building, and maintaining the data infrastructure
+that powers our analytics, reporting, and machine learning capabilities.
+
+What you'll do:
+- Design and build scalable data pipelines processing billions of events daily
+- Maintain and improve our real-time streaming infrastructure using Kafka and Flink
+- Partner with ML teams to build and maintain feature pipelines
+- Own data quality and observability across our warehouse
+
+Requirements:
+- 6+ years of data engineering experience
+- Strong Python and SQL skills
+- Deep experience with Spark or Flink for large-scale data processing
+- Experience with Kafka or similar streaming systems
+- Experience with a cloud data warehouse (Snowflake, BigQuery, or Redshift)
+- Familiarity with dbt for analytics engineering
+
+Nice to have:
+- Experience with LLM pipelines or RAG architectures
+- Experience with Airflow or similar orchestration tools
+- Contributions to open-source data projects
+
+Compensation:
+$175,000 – $220,000 base salary
+Equity + comprehensive benefits
+
+Employment type: Full-time
+Seniority: Senior
+Remote: Yes (US timezones preferred)
