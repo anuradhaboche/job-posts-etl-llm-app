@@ -140,6 +140,93 @@ def extract_from_pdf(pdf_path: str) -> JobPosting:
     return extract(text, source_file=str(pdf_path))
 
 
+RETRY_PROMPT = """\
+You are a data extraction assistant. A previous extraction of the job posting below \
+was uncertain about specific fields. Focus only on extracting those fields accurately.
+
+Return ONLY a valid JSON object with exactly these keys: {fields}
+No explanation, no markdown, no extra keys.
+
+Field definitions:
+- is_remote (boolean: true if remote work is allowed, false if fully on-site, null if unclear)
+- seniority_level (string: junior | mid | senior | staff | principal | null)
+- years_experience_min (integer: minimum years of experience required, or null)
+- years_experience_max (integer: maximum years of experience mentioned, or null)
+- location (string: primary work location, or null if fully remote/unclear)
+- confidence_score (float 0.0–1.0: your confidence across the fields you just extracted)
+- low_confidence_fields (list: field names you are still uncertain about)
+
+Job posting:
+---
+{text}
+---
+"""
+
+
+def retry_uncertain_fields(
+    posting: JobPosting,
+    text: str,
+) -> JobPosting:
+    """
+    Re-extract only the fields the LLM was uncertain about.
+    Merges the improved values back into the posting and returns an updated JobPosting.
+    """
+    client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    fields = posting.low_confidence_fields
+    if not fields:
+        return posting
+
+    prompt = RETRY_PROMPT.format(fields=", ".join(fields), text=text[:8000])
+
+    logger.info(f"Retrying uncertain fields {fields} for: {posting.job_title} @ {posting.company}")
+
+    for attempt in range(1, MAX_RETRIES + 1):
+        try:
+            response = client.messages.create(
+                model=MODEL,
+                max_tokens=MAX_TOKENS,
+                messages=[{"role": "user", "content": prompt}]
+            )
+            raw_text = response.content[0].text.strip()
+            tokens_used = response.usage.input_tokens + response.usage.output_tokens
+
+            if raw_text.startswith("```"):
+                raw_text = raw_text.split("```")[1]
+                if raw_text.startswith("json"):
+                    raw_text = raw_text[4:]
+
+            updates = json.loads(raw_text)
+
+            # Merge updated fields into existing posting
+            current = json.loads(posting.model_dump_json())
+            for key, val in updates.items():
+                if key in current:
+                    current[key] = val
+
+            current["tokens_used"] = (posting.tokens_used or 0) + tokens_used
+
+            updated = JobPosting(**current)
+            logger.info(
+                f"Retry result: confidence={updated.confidence_score} | "
+                f"uncertain={updated.low_confidence_fields} | tokens={tokens_used}"
+            )
+            return updated
+
+        except json.JSONDecodeError as e:
+            logger.warning(f"Retry attempt {attempt}: JSON parse failed — {e}")
+            if attempt == MAX_RETRIES:
+                return posting
+            time.sleep(RETRY_DELAY_SECONDS)
+
+        except anthropic.APIStatusError as e:
+            logger.warning(f"Retry attempt {attempt}: API error {e.status_code}")
+            if attempt == MAX_RETRIES or e.status_code in (400, 401, 403):
+                return posting
+            time.sleep(RETRY_DELAY_SECONDS * attempt)
+
+    return posting
+
+
 # ── Quick smoke test ───────────────────────────────────────────────────────────
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)

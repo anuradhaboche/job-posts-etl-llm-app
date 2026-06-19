@@ -1,0 +1,79 @@
+Data Engineer — Engtal (Franklin Park, IL)
+Salary: $125,000.00/yr - $155,000.00/yr
+Level: Mid-Senior level
+Employment Type: Full-time
+
+Databricks Developer
+Franklin Park, IL
+$125K-$155K
+Permanent
+
+
+
+About the Rol
+eWe're hiring a Databricks Developer to build and own our cloud-based data platform from the inside out. This is a newly created, high-impact position reporting to the Director of Enterprise Applications and Data Analytics within Information Technology
+
+
+.
+You'll be transitioning work currently handled externally, taking full ownership of the Databricks environment and working closely with both technical teams and business stakeholders to deliver scalable, reliable data solutions. You'll be the specialist on a small, collaborative team — which means broad influence, real visibility, and the opportunity to shape standards, architecture, and best practices from day on
+
+
+e.
+This role is for someone who is ready to hit the ground running — not grow into it. If you thrive in environments where your work has direct, measurable impact and you enjoy wearing multiple hats, this is the right opportuni
+
+
+ty.
+What You'll Be D
+oingData Platform Enginee
+
+- ringDesign, develop, and maintain scalable data pipelines and ELT/ETL workflows using Databricks and Apache Spark (PySpark/Spark 
+- SQL)Build and optimize lakehouse architecture using Delta Lake and related formats (Parquet, Iceb
+- erg)Apply medallion architecture principles — bronze, silver, and gold layers — across solution de
+- signDevelop production-grade data workflows using Databricks Workflows and/or Declarative Pipel
+- inesImplement data governance, security, and access controls using Unity Cat
+
+
+alog
+Cloud & Migr
+
+- ationSupport migration from legacy data warehouse systems to modern, cloud-based architec
+- turesDesign and implement solutions on AWS, Azure, o
+- r GCPImplement CI/CD pipelines and infrastructure-as-code (Terraform, Databricks Asset Bundles, GitHub Act
+- ions)Monitor, troubleshoot, and resolve production pipeline issues to ensure reliability and perfor
+
+
+mance
+Collaboration & Sta
+
+- ndardsPartner with technical and business stakeholders to translate requirements into scalable data sol
+- utionsFacilitate technical workshops to identify opportunities and deliver business
+-  valueParticipate in code reviews, testing, documentation, and deployment acti
+- vitiesContribute to the continuous improvement of data engineering standards, tools, and best pra
+- cticesProvide technical support during implementation and stabilization 
+
+
+phases
+What We're Look
+ing ForR
+
+- equired5+ years of data engineering exp
+- erience4+ years of hands-on experience with the Databricks p
+- latformStrong proficiency in Apache Spark (PySpark and/or Spa
+- rk SQL)Experience designing and implementing solutions on AWS, Azure,
+-  or GCPHands-on expertise in ELT processes, data security, data wrangling, and cloud co
+- mputingProficiency in SQL, data integration/EAI, database technologies, and visualization pl
+- atformsCross-functional experience — you've worked across multiple environments, not been siloed in one sp
+- ecialtyHighly analytical, detail-oriented, and self-motivated with strong written and verbal communication
+-  skillsBachelor's degree in Engineering, IT, Computer Science, or a related field (pre
+
+
+ferred)
+Nice
+
+-  to HaveDatabricks certification (especially valuable if no
+-  degree)Experience with business analytics design and dev
+- elopmentFamiliarity with business processes and company-wide
+-  systemsBackground in manufacturing or similarly complex operational envi
+- ronmentsStrong change enablement and business process redesig
+
+n skills

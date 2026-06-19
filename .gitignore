@@ -1,0 +1,16 @@
+# Environment
+.env
+venv/
+
+# Output folders (generated data, not source code)
+doc_extraction/Phase 1 Output/
+doc_extraction/Phase 2 Output/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# macOS
+.DS_Store

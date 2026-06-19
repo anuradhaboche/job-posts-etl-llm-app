@@ -1,0 +1,87 @@
+Data Engineer — Amazon Web Services (AWS) (Seattle, WA)
+Level: Not Applicable
+Employment Type: Full-time
+
+Description
+
+Sales, Marketing and Global Services (SMGS)
+
+AWS Sales, Marketing, and Global Services (SMGS) is responsible for driving revenue, adoption, and growth from the largest and fastest growing small- and mid-market accounts to enterprise-level customers including public sector. The AWS Global Support team interacts with leading companies and believes that world-class support is critical to customer success. AWS Support also partners with a global list of customers that are building mission-critical applications on top of AWS services.
+
+Mission Statement
+
+The AWS Marketing Data: AI Science, Analytics and Engineering (D:SE) team owns analytics, reporting and self-service tooling, data representation, machine learning models, measurement, valuation and economics products for AWS Marketing. We are the central data and science organization, and we work with different teams in AWS Marketing to drive better measurement, increase experimentation velocity, improve data access and analytical self-service, deploy and test ML-powered targeting models, drive higher economic value, and empower strategic decisions with business deep dives. We enable other analytics, BI, and science teams across AWS Marketing through mechanisms, partnerships and scalable tools. We work globally as a central team and establish standards, benchmarks, and best practices for use throughout AWS Marketing.
+
+Overview
+
+Would you like to support increasing customer base and the revenue for AWS, a market-leading cloud offering? Would you like to be part of a team focused on increasing awareness and adoption of the AWS platform by analyzing customer's behavior on and outside AWS websites? Do you want to empower our AWS Marketing organization make data-driven decisions that further establish AWS as leader in the cloud computing world?
+
+As a Data Engineer at AWS, you will be working in a large, extremely complex and dynamic data warehousing environment. We are looking for someone with the uncanny ability to integrate multiple heterogeneous data sources with AWS Marketing Data Warehouse - Jarvis and build efficient, flexible, and scalable data warehouse and reporting solutions. You should be enthusiastic about learning new technologies and be able to implement solutions using these technologies to enable upgrades of the existing platform. You should have excellent business and communication skills and be able to work with business owners to develop and define key business questions, then build the data sets that answer those questions. You should be expert at designing, implementing, and operating stable, scalable, low cost solutions to flow data from production systems into the data warehouse and into end-user facing reporting applications. Above all you should be passionate about working with huge data sets and someone who loves to bring datasets together to answer business questions and drive growth.
+
+At AWS, you have control over every layer you build. Instead of owning a small slice of an existing service, you will own a core segment of a growing marketing platform serving 1000s of internal customers and millions of external customers. You will build on multiple AWS services and have opportunities to engage directly with those teams to improve our core offerings. At AWS, we work with our customers on a daily basis to prove out our ideas, gather feedback, and improve the platform.
+
+Location: Successful candidate must be located in Seattle - WA/Austin - TX/New York - NY/Herndon - VA
+
+A day in the life
+
+
+
+-  Design, implement, and support a platform providing ad-hoc access to large datasets
+-  Interface with other technology teams to extract, transform, and load data from a wide variety of data sources using SQL
+-  Build robust and scalable data integration (ETL) pipelines using SQL, Python and AWS services such as Data Pipelines, Glue
+-  Implement data structures using best practices in data modeling, ETL/ELT processes, and SQL/Redshift
+-  Interface with business customers, gathering requirements and delivering complete reporting solutions
+-  Build and deliver high quality datasets to support business analyst and customer reporting needs
+-  Continually improve ongoing reporting and analysis processes, automating or simplifying self-service support for customers
+
+About The Team
+
+About AWS
+
+Diverse Experiences
+
+AWS values diverse experiences. Even if you do not meet all of the qualifications and skills listed in the job description, we encourage candidates to apply. If your career is just starting, hasn’t followed a traditional path, or includes alternative experiences, don’t let it stop you from applying.
+
+Why AWS?
+
+Amazon Web Services (AWS) is the world’s most comprehensive and broadly adopted cloud platform. We pioneered cloud computing and never stopped innovating — that’s why customers from the most successful startups to Global 500 companies trust our robust suite of products and services to power their businesses.
+
+Inclusive Team Culture
+
+Here at AWS, it’s in our nature to learn and be curious. Our employee-led affinity groups foster a culture of inclusion that empower us to be proud of our differences. Ongoing events and learning experiences, including our Conversations on Race and Ethnicity (CORE) and AmazeCon (gender diversity) conferences, inspire us to never stop embracing our uniqueness.
+
+Mentorship & Career Growth
+
+We’re continuously raising our performance bar as we strive to become Earth’s Best Employer. That’s why you’ll find endless knowledge-sharing, mentorship and other career-advancing resources here to help you develop into a better-rounded professional.
+
+Work/Life Balance
+
+We value work-life harmony. Achieving success at work should never come at the expense of sacrifices at home, which is why we strive for flexibility as part of our working culture. When we feel supported in the workplace and at home, there’s nothing we can’t achieve in the cloud.
+
+Basic Qualifications
+
+
+
+-  Bachelor's degree
+-  3+ years of data engineering experience
+-  2+ years of developing and operating large-scale data structures for business intelligence analytics (using ETL/ELT processes) experience
+
+Preferred Qualifications
+
+
+
+-  Experience with AWS technologies like Redshift, S3, AWS Glue, EMR, Kinesis, FireHose, Lambda, and IAM roles and permissions
+-  Experience with non-relational databases / data stores (object storage, document or key-value stores, graph databases, column-family databases)
+
+Amazon is an equal opportunity employer and does not discriminate on the basis of protected veteran status, disability, or other legally protected status.
+
+Our inclusive culture empowers Amazonians to deliver the best results for our customers. If you have a disability and need a workplace accommodation or adjustment during the application and hiring process, including support for the interview or onboarding process, please visit https://amazon.jobs/content/en/how-we-hire/accommodations for more information. If the country/region you’re applying in isn’t listed, please contact your Recruiting Partner.
+
+The base salary range for this position is listed below. Your Amazon package will include sign-on payments and restricted stock units (RSUs). Final compensation will be determined based on factors including experience, qualifications, and location. Amazon also offers comprehensive benefits including health insurance (medical, dental, vision, prescription, Basic Life & AD&D insurance and option for Supplemental life plans, EAP, Mental Health Support, Medical Advice Line, Flexible Spending Accounts, Adoption and Surrogacy Reimbursement coverage), 401(k) matching, paid time off, and parental leave. Learn more about our benefits at https://amazon.jobs/en/benefits.
+
+USA, WA, Seattle - 132,100.00 - 178,800.00 USD annually
+
+
+Company - Amazon Web Services, Inc.
+
+Job ID: A10420946

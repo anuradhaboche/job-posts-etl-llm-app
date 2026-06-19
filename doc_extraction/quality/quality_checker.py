@@ -7,11 +7,63 @@ records that need human review before they hit the main warehouse table.
 
 import logging
 from dataclasses import dataclass
+from typing import Optional
 from models.job_posting import JobPosting
 
 logger = logging.getLogger(__name__)
 
 CONFIDENCE_THRESHOLD = float(__import__("os").getenv("CONFIDENCE_THRESHOLD", 0.75))
+
+# Fields that are expected to be unknown — never flag them as uncertain
+EXPECTED_UNKNOWN_FIELDS = {"years_experience_max"}
+
+
+def infer_seniority(years_min: Optional[int]) -> Optional[str]:
+    """Infer seniority level from minimum years of experience."""
+    if years_min is None:
+        return None
+    if years_min <= 2:
+        return "junior"
+    if years_min <= 5:
+        return "mid"
+    if years_min <= 8:
+        return "senior"
+    return "staff"
+
+
+def post_process(posting: JobPosting) -> JobPosting:
+    """
+    Apply business rules to fill in fields before quality checks.
+    Returns a new JobPosting with inferred values applied.
+    """
+    data = posting.model_dump()
+
+    # Rule 1: years_experience_max is rarely defined — remove from uncertain fields
+    data["low_confidence_fields"] = [
+        f for f in data["low_confidence_fields"]
+        if f not in EXPECTED_UNKNOWN_FIELDS
+    ]
+
+    # Rule 2: if location is present and remote not explicitly stated, assume not remote
+    if data["is_remote"] is None and data["location"]:
+        data["is_remote"] = False
+        data["low_confidence_fields"] = [
+            f for f in data["low_confidence_fields"] if f != "is_remote"
+        ]
+        logger.info(f"Inferred is_remote=False from location: {data['location']}")
+
+    # Rule 3: infer seniority from years_experience_min if missing
+    if data["seniority_level"] is None and data["years_experience_min"] is not None:
+        data["seniority_level"] = infer_seniority(data["years_experience_min"])
+        data["low_confidence_fields"] = [
+            f for f in data["low_confidence_fields"] if f != "seniority_level"
+        ]
+        logger.info(
+            f"Inferred seniority_level={data['seniority_level']} "
+            f"from years_experience_min={data['years_experience_min']}"
+        )
+
+    return JobPosting(**data)
 
 
 @dataclass
@@ -24,9 +76,10 @@ class QualityResult:
 
 def run_checks(posting: JobPosting) -> QualityResult:
     """
-    Run all quality checks on a posting.
+    Apply business-rule post-processing, then run quality checks.
     Returns a QualityResult with passed=True if it's clean.
     """
+    posting = post_process(posting)
     failures = []
 
     # 1. Required fields must exist

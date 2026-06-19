@@ -1,0 +1,58 @@
+Data Engineer — Prizeout (New York, NY)
+Level: Not Applicable
+Employment Type: Full-time
+
+What Is Prizeout
+
+Prizeout is a fast-growing fintech transforming how people interact with their money by turning everyday transactions into rewarding, value-driven moments. We sit at the intersection of payments, rewards, and loyalty, empowering financial institutions to build deeper connections with their users. Our platform analyzes rich transactional data to deliver personalized insights and maximize value with every purchase. The company was founded in 2019 and is headquartered in NYC.
+
+Why Prizeout
+
+At Prizeout, we’re redefining how people engage with their money through smarter, data-driven rewards. We’re looking for curious, analytical builders who love turning complex, messy data into meaningful insights that drive loyalty and better financial outcomes. We keep the user at the center of every decision and we value humility, curiosity, and ownership.
+
+About This Role
+
+As a Data Engineer at Prizeout, you’ll own the data that powers CashBack+ and our credit union rewards ecosystem. Managing the end-to-end lifecycle of financial institution data, you’ll ensure every transaction is accurate, every action is recognized, and every reward is delivered on time. Working with core banking systems, card networks, and digital event data, you’ll turn complex, messy inputs into clean, reliable signals that drive real-time insights and loyalty programs.
+
+What You'll Do
+
+
+
+- Own and manage the full lifecycle of credit union core and card data pipelines
+- Build and maintain scalable pipelines that clean, standardize, enrich, and classify transactional and behavioral data
+- Translate raw transactions into meaningful insights using classification models (direct deposits, ACH events, MCC logic, etc.)
+- Develop and maintain automated validation and monitoring systems
+- Create and manage high-quality dashboards and reporting tools for credit unions and internal teams
+- Collaborate with Product, Data Science, Operations, and Integrations teams to refine data models and onboarding processes
+- Continuously improve data models, infrastructure, and internal tools
+- Stay current on fintech data architecture trends and emerging technologies to guide ongoing platform evolution
+
+
+What We're Looking For
+
+
+
+- 3+ years experience in software/data engineering, ideally in microservice or event-driven architecture
+- Advanced SQL and database design skills
+- Experience with cloud environments and distributed systems
+- Experience with financial/transaction data pipelines or interest in learning deeply
+- Familiarity with Snowflake or similar data warehouse tools (preferred)
+- Bias for action and comfort working with ambiguity
+- Ability to thrive in a fast-moving, collaborative, mission-driven team
+- Clear communicator who brings clarity, not complexity
+- Scrappy, resilient, and energized by building things that work in the real world at scale
+- Preference for candidates located in New York or Boston
+
+
+Please Note:
+
+
+
+- Must be authorized to work for any employer in the U.S. We are unable to sponsor or take over sponsorship of an employment visa at this time
+
+
+The expected salary range for this position is $150,000-$170,000, plus an equity component.
+
+Prizeout is committed to creating a diverse environment and is proud to be an equal opportunity employer. All qualified applicants will receive consideration for employment without regard to race, color, religion, gender, gender identity or expression, sexual orientation, national origin, genetics, disability, age, or veteran status.
+
+We may use artificial intelligence (AI) tools to support parts of the hiring process, such as reviewing applications, analyzing resumes, or assessing responses and identifying potential inconsistencies or verification signals in application materials based on available information. These tools assist our recruitment team but do not replace human judgment. Final hiring decisions are ultimately made by humans. If you would like more information about how your data is processed, please contact us.
