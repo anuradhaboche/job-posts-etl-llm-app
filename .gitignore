@@ -2,9 +2,10 @@
 .env
 venv/
 
-# Output folders (generated data, not source code)
+# Output folders and generated data
 doc_extraction/Phase 1 Output/
 doc_extraction/Phase 2 Output/
+doc_extraction/pipeline.duckdb
 
 # Python cache
 __pycache__/

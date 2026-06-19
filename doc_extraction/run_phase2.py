@@ -21,6 +21,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from models.job_posting import JobPosting
 from quality.quality_checker import run_checks, QualityResult
+from loaders.duckdb_loader import load_batch
 
 INPUT_DIR  = Path(__file__).parent / "Phase 1 Output"
 CLEAN_DIR  = Path(__file__).parent / "Phase 2 Output" / "clean"
@@ -83,11 +84,18 @@ def main():
             for reason in result.failure_reasons:
                 print(f"  ✗ {reason}")
 
+    # Load to DuckDB
+    db_summary = load_batch(
+        clean=[r for _, r in clean],
+        review=[r for _, r in review],
+    )
+
     # Summary
     print(f"\n{'─'*60}")
     print(f"Quality summary: {len(clean)} clean  |  {len(review)} flagged for review")
-    print(f"\nClean records  → Phase 2 Output/clean/")
-    print(f"Review records → Phase 2 Output/review/")
+    print(f"\nClean records  → Phase 2 Output/clean/  +  DuckDB: job_postings")
+    print(f"Review records → Phase 2 Output/review/ +  DuckDB: job_postings_review")
+    print(f"Database       → {db_summary['db']}")
 
     # Save combined summary
     summary = {

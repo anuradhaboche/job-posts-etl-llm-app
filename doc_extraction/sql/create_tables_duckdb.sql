@@ -1,0 +1,53 @@
+-- DuckDB schema for the job postings ETL pipeline
+
+CREATE TABLE IF NOT EXISTS job_postings (
+    id                      VARCHAR DEFAULT gen_random_uuid(),
+    job_title               VARCHAR NOT NULL,
+    company                 VARCHAR NOT NULL,
+    location                VARCHAR,
+    is_remote               BOOLEAN,
+    salary_min              DOUBLE,
+    salary_max              DOUBLE,
+    salary_currency         VARCHAR DEFAULT 'USD',
+    required_skills         VARCHAR[],
+    preferred_skills        VARCHAR[],
+    years_experience_min    INTEGER,
+    years_experience_max    INTEGER,
+    employment_type         VARCHAR,
+    seniority_level         VARCHAR,
+    confidence_score        DOUBLE,
+    low_confidence_fields   VARCHAR[],
+    source_file             VARCHAR,
+    extracted_at            TIMESTAMP,
+    model_used              VARCHAR,
+    tokens_used             INTEGER,
+    loaded_at               TIMESTAMP DEFAULT current_timestamp,
+    completeness_score      DOUBLE
+);
+
+CREATE TABLE IF NOT EXISTS job_postings_review (
+    id                      VARCHAR DEFAULT gen_random_uuid(),
+    job_title               VARCHAR,
+    company                 VARCHAR,
+    location                VARCHAR,
+    is_remote               BOOLEAN,
+    salary_min              DOUBLE,
+    salary_max              DOUBLE,
+    salary_currency         VARCHAR,
+    required_skills         VARCHAR[],
+    preferred_skills        VARCHAR[],
+    years_experience_min    INTEGER,
+    years_experience_max    INTEGER,
+    employment_type         VARCHAR,
+    seniority_level         VARCHAR,
+    confidence_score        DOUBLE,
+    low_confidence_fields   VARCHAR[],
+    source_file             VARCHAR,
+    extracted_at            TIMESTAMP,
+    model_used              VARCHAR,
+    tokens_used             INTEGER,
+    loaded_at               TIMESTAMP DEFAULT current_timestamp,
+    completeness_score      DOUBLE,
+    failure_reasons         VARCHAR[],
+    review_status           VARCHAR DEFAULT 'pending'
+);
