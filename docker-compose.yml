@@ -1,0 +1,67 @@
+version: '3.8'
+
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.8.1-python3.11
+  environment:
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
+    ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    DUCKDB_PATH: /opt/airflow/data/pipeline.duckdb
+    LLM_MODEL: ${LLM_MODEL:-claude-sonnet-4-6}
+    PYTHONPATH: /opt/airflow/dags/doc_extraction
+  volumes:
+    - ./doc_extraction/dags:/opt/airflow/dags/doc_extraction/dags
+    - ./doc_extraction/extractors:/opt/airflow/dags/doc_extraction/extractors
+    - ./doc_extraction/models:/opt/airflow/dags/doc_extraction/models
+    - ./doc_extraction/loaders:/opt/airflow/dags/doc_extraction/loaders
+    - ./doc_extraction/quality:/opt/airflow/dags/doc_extraction/quality
+    - ./doc_extraction/sql:/opt/airflow/dags/doc_extraction/sql
+    - ./data/input:/opt/airflow/data/input       # drop .txt/.pdf files here
+    - ./data/processed:/opt/airflow/data/processed
+    - ./data:/opt/airflow/data                   # DuckDB lives here
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
+
+  airflow-init:
+    <<: *airflow-common
+    command: >
+      bash -c "
+        pip install anthropic pydantic python-dotenv duckdb &&
+        airflow db init &&
+        airflow users create --username airflow --password airflow
+          --firstname Air --lastname Flow --role Admin --email airflow@example.com
+      "
+    restart: on-failure
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      retries: 3
+    restart: always
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    restart: always

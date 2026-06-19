@@ -6,6 +6,10 @@ venv/
 doc_extraction/Phase 1 Output/
 doc_extraction/Phase 2 Output/
 doc_extraction/pipeline.duckdb
+data/input/*
+data/processed/*
+!data/input/.gitkeep
+!data/processed/.gitkeep
 
 # Python cache
 __pycache__/

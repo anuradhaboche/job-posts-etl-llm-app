@@ -111,14 +111,14 @@ def validate_and_split(**context) -> dict:
     return {"clean": len(clean), "review": len(review)}
 
 
-def load_to_snowflake(**context):
-    """Load validated records to Snowflake."""
+def load_to_duckdb(**context):
+    """Load validated records to DuckDB."""
     import sys
     sys.path.insert(0, "/opt/airflow/dags/doc_extraction")
 
     from models.job_posting import JobPosting
     from quality.quality_checker import QualityResult
-    from loaders.snowflake_loader import load_batch
+    from loaders.duckdb_loader import load_batch
 
     def deserialize(items):
         results = []
@@ -172,7 +172,7 @@ with DAG(
     t1 = PythonOperator(task_id="scan_for_new_files", python_callable=scan_for_new_files)
     t2 = PythonOperator(task_id="extract_fields", python_callable=extract_fields)
     t3 = PythonOperator(task_id="validate_and_split", python_callable=validate_and_split)
-    t4 = PythonOperator(task_id="load_to_snowflake", python_callable=load_to_snowflake)
+    t4 = PythonOperator(task_id="load_to_duckdb", python_callable=load_to_duckdb)
     t5 = PythonOperator(task_id="move_processed_files", python_callable=move_processed_files)
 
     t1 >> t2 >> t3 >> t4 >> t5
