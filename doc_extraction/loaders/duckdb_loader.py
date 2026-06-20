@@ -48,6 +48,7 @@ def _posting_to_row(result: QualityResult) -> dict:
         "confidence_score":      p.confidence_score,
         "low_confidence_fields": p.low_confidence_fields,
         "source_file":           p.source_file,
+        "source_url":            p.source_url,
         "extracted_at":          p.extracted_at,
         "model_used":            p.model_used,
         "tokens_used":           p.tokens_used,
@@ -64,6 +65,7 @@ def load_batch(
     clean_count = 0
     for result in clean:
         row = _posting_to_row(result)
+        conn.execute("DELETE FROM job_postings WHERE source_file = $source_file", {"source_file": row["source_file"]})
         conn.execute("""
             INSERT INTO job_postings (
                 job_title, company, location, is_remote,
@@ -72,7 +74,7 @@ def load_batch(
                 years_experience_min, years_experience_max,
                 employment_type, seniority_level,
                 confidence_score, low_confidence_fields,
-                source_file, extracted_at, model_used, tokens_used,
+                source_file, source_url, extracted_at, model_used, tokens_used,
                 completeness_score
             ) VALUES (
                 $job_title, $company, $location, $is_remote,
@@ -81,7 +83,7 @@ def load_batch(
                 $years_experience_min, $years_experience_max,
                 $employment_type, $seniority_level,
                 $confidence_score, $low_confidence_fields,
-                $source_file, $extracted_at, $model_used, $tokens_used,
+                $source_file, $source_url, $extracted_at, $model_used, $tokens_used,
                 $completeness_score
             )
         """, row)
@@ -92,6 +94,7 @@ def load_batch(
     for result in review:
         row = _posting_to_row(result)
         row["failure_reasons"] = result.failure_reasons
+        conn.execute("DELETE FROM job_postings_review WHERE source_file = $source_file", {"source_file": row["source_file"]})
         conn.execute("""
             INSERT INTO job_postings_review (
                 job_title, company, location, is_remote,
@@ -100,7 +103,7 @@ def load_batch(
                 years_experience_min, years_experience_max,
                 employment_type, seniority_level,
                 confidence_score, low_confidence_fields,
-                source_file, extracted_at, model_used, tokens_used,
+                source_file, source_url, extracted_at, model_used, tokens_used,
                 completeness_score, failure_reasons
             ) VALUES (
                 $job_title, $company, $location, $is_remote,
@@ -109,7 +112,7 @@ def load_batch(
                 $years_experience_min, $years_experience_max,
                 $employment_type, $seniority_level,
                 $confidence_score, $low_confidence_fields,
-                $source_file, $extracted_at, $model_used, $tokens_used,
+                $source_file, $source_url, $extracted_at, $model_used, $tokens_used,
                 $completeness_score, $failure_reasons
             )
         """, row)

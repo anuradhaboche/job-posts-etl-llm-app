@@ -6,11 +6,14 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__WEBSERVER__SECRET_KEY: 'dev-secret-key-change-in-prod'
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
+    _PIP_ADDITIONAL_REQUIREMENTS: "anthropic pydantic python-dotenv duckdb requests"
     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    DUCKDB_PATH: /opt/airflow/data/pipeline.duckdb
+    APIFY_API_TOKEN: ${APIFY_API_TOKEN}
+    DUCKDB_PATH: /opt/airflow/doc_extraction/pipeline.duckdb
     LLM_MODEL: ${LLM_MODEL:-claude-sonnet-4-6}
     PYTHONPATH: /opt/airflow/dags/doc_extraction
   volumes:
@@ -20,9 +23,9 @@ x-airflow-common: &airflow-common
     - ./doc_extraction/loaders:/opt/airflow/dags/doc_extraction/loaders
     - ./doc_extraction/quality:/opt/airflow/dags/doc_extraction/quality
     - ./doc_extraction/sql:/opt/airflow/dags/doc_extraction/sql
-    - ./data/input:/opt/airflow/data/input       # drop .txt/.pdf files here
+    - ./data/input:/opt/airflow/data/input
     - ./data/processed:/opt/airflow/data/processed
-    - ./data:/opt/airflow/data                   # DuckDB lives here
+    - ./doc_extraction:/opt/airflow/doc_extraction  # DuckDB lives here
   depends_on:
     postgres:
       condition: service_healthy
@@ -41,14 +44,8 @@ services:
 
   airflow-init:
     <<: *airflow-common
-    command: >
-      bash -c "
-        pip install anthropic pydantic python-dotenv duckdb &&
-        airflow db init &&
-        airflow users create --username airflow --password airflow
-          --firstname Air --lastname Flow --role Admin --email airflow@example.com
-      "
-    restart: on-failure
+    command: bash -c "airflow db init && (airflow users create --username airflow --password airflow --firstname Air --lastname Flow --role Admin --email airflow@example.com || true)"
+    restart: "no"
 
   airflow-webserver:
     <<: *airflow-common

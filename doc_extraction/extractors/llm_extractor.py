@@ -124,6 +124,12 @@ def extract(
     raw_fields["model_used"] = MODEL
     raw_fields["tokens_used"] = tokens
 
+    # Parse source_url from text if present (written by scrape_jobs task)
+    for line in text.splitlines():
+        if line.startswith("Source URL:"):
+            raw_fields["source_url"] = line.replace("Source URL:", "").strip()
+            break
+
     posting = JobPosting(**raw_fields)
     logger.info(
         f"Extracted: {posting.job_title} @ {posting.company} | "

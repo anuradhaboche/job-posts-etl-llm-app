@@ -18,11 +18,13 @@ CREATE TABLE IF NOT EXISTS job_postings (
     confidence_score        DOUBLE,
     low_confidence_fields   VARCHAR[],
     source_file             VARCHAR,
+    source_url              VARCHAR UNIQUE,
     extracted_at            TIMESTAMP,
     model_used              VARCHAR,
     tokens_used             INTEGER,
     loaded_at               TIMESTAMP DEFAULT current_timestamp,
-    completeness_score      DOUBLE
+    completeness_score      DOUBLE,
+    UNIQUE (source_file)
 );
 
 CREATE TABLE IF NOT EXISTS job_postings_review (
@@ -43,11 +45,13 @@ CREATE TABLE IF NOT EXISTS job_postings_review (
     confidence_score        DOUBLE,
     low_confidence_fields   VARCHAR[],
     source_file             VARCHAR,
+    source_url              VARCHAR UNIQUE,
     extracted_at            TIMESTAMP,
     model_used              VARCHAR,
     tokens_used             INTEGER,
     loaded_at               TIMESTAMP DEFAULT current_timestamp,
     completeness_score      DOUBLE,
     failure_reasons         VARCHAR[],
-    review_status           VARCHAR DEFAULT 'pending'
+    review_status           VARCHAR DEFAULT 'pending',
+    UNIQUE (source_file)
 );

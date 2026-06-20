@@ -38,6 +38,7 @@ class JobPosting(BaseModel):
 
     # --- Pipeline metadata (added by our code, not the LLM) ---
     source_file: Optional[str] = None
+    source_url: Optional[str] = None
     extracted_at: datetime = Field(default_factory=datetime.utcnow)
     model_used: Optional[str] = None
     tokens_used: Optional[int] = None
