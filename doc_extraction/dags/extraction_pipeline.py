@@ -25,8 +25,8 @@ default_args = {
 
 WATCH_DIR = Variable.get("DOC_EXTRACTION_WATCH_DIR", default_var="/opt/airflow/data/input")
 PROCESSED_DIR = Variable.get("DOC_EXTRACTION_PROCESSED_DIR", default_var="/opt/airflow/data/processed")
-LINKEDIN_SEARCH_URL = Variable.get("LINKEDIN_SEARCH_URL", default_var="https://www.linkedin.com/jobs/search/?keywords=Data+Engineer&location=Seattle%2C+WA")
-APIFY_MAX_RESULTS = int(Variable.get("APIFY_MAX_RESULTS", default_var="20"))
+LINKEDIN_SEARCH_URL = Variable.get("LINKEDIN_SEARCH_URL", default_var="https://www.linkedin.com/jobs/search/?keywords=Data%20Engineer&location=San%20Francisco%20Bay%20Area")
+APIFY_MAX_RESULTS = int(Variable.get("APIFY_MAX_RESULTS", default_var="10"))
 
 
 # ── Task functions ─────────────────────────────────────────────────────────────

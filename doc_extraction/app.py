@@ -246,13 +246,13 @@ if not review:
 else:
     st.info("Edit the uncertain fields below, then approve or discard each record.")
 
-    for r in review:
+    for idx, r in enumerate(review):
         with st.expander(f"⚠ {r['job_title']} @ {r['company']}  |  confidence: {r['confidence_score']}"):
             st.markdown(f"**Failure reasons:** `{r['failure_reasons']}`")
             if r.get("source_url"):
                 st.markdown(f"[View job posting on LinkedIn]({r['source_url']})")
 
-            key = f"{r['job_title']}_{r['company']}".replace(" ", "_")
+            key = f"{idx}_{r['job_title']}_{r['company']}".replace(" ", "_")
 
             col1, col2, col3 = st.columns(3)
             with col1:
