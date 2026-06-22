@@ -10,9 +10,10 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'false'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKENDS: airflow.api.auth.backend.basic_auth
-    _PIP_ADDITIONAL_REQUIREMENTS: "anthropic pydantic python-dotenv duckdb requests"
+    _PIP_ADDITIONAL_REQUIREMENTS: "anthropic pydantic python-dotenv duckdb==1.3.1 requests"
     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     APIFY_API_TOKEN: ${APIFY_API_TOKEN}
+    MOTHERDUCK_TOKEN: ${MOTHERDUCK_TOKEN}
     DUCKDB_PATH: /opt/airflow/doc_extraction/pipeline.duckdb
     LLM_MODEL: ${LLM_MODEL:-claude-sonnet-4-6}
     PYTHONPATH: /opt/airflow/dags/doc_extraction

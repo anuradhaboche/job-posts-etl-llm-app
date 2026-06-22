@@ -11,17 +11,67 @@ import time
 import datetime
 from pathlib import Path
 from collections import Counter
+from typing import Optional
 
+import requests
 import duckdb
 import streamlit as st
 import plotly.express as px
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-DB_PATH = os.getenv("DUCKDB_PATH", str(Path(__file__).parent / "pipeline.duckdb"))
+def _secret(key, default=None):
+    """Read from env first, then Streamlit Cloud secrets."""
+    val = os.getenv(key)
+    if val:
+        return val
+    try:
+        return st.secrets[key]
+    except Exception:
+        return default
+
+
+_token = _secret("MOTHERDUCK_TOKEN")
+if _token:
+    DB_PATH = f"md:job_pipeline?motherduck_token={_token}"
+else:
+    DB_PATH = _secret("DUCKDB_PATH", str(Path(__file__).parent / "pipeline.duckdb"))
+
+AIRFLOW_URL  = os.getenv("AIRFLOW_URL", "http://localhost:8080")
+AIRFLOW_USER = os.getenv("AIRFLOW_USER", "airflow")
+AIRFLOW_PASS = os.getenv("AIRFLOW_PASS", "airflow")
+DAG_ID       = "doc_extraction_pipeline"
+
+
+def trigger_dag() -> Optional[str]:
+    """Trigger the Airflow DAG and return the run_id."""
+    try:
+        resp = requests.post(
+            f"{AIRFLOW_URL}/api/v1/dags/{DAG_ID}/dagRuns",
+            json={},
+            auth=(AIRFLOW_USER, AIRFLOW_PASS),
+            timeout=10,
+        )
+        resp.raise_for_status()
+        return resp.json()["dag_run_id"]
+    except Exception as e:
+        return None, str(e)
+
+
+def get_dag_run_status(run_id: str) -> str:
+    """Poll Airflow for the current DAG run state."""
+    try:
+        resp = requests.get(
+            f"{AIRFLOW_URL}/api/v1/dags/{DAG_ID}/dagRuns/{run_id}",
+            auth=(AIRFLOW_USER, AIRFLOW_PASS),
+            timeout=10,
+        )
+        return resp.json().get("state", "unknown")
+    except Exception:
+        return "unknown"
 
 st.set_page_config(
-    page_title="Job Extraction Pipeline",
+    page_title="LinkedIn Job Listings",
     layout="wide",
     page_icon="🔍",
 )
@@ -30,12 +80,13 @@ st.set_page_config(
 # ── Data loading ───────────────────────────────────────────────────────────────
 @st.cache_data(ttl=60)
 def load_data():
-    if not Path(DB_PATH).exists():
+    is_local = not DB_PATH.startswith("md:")
+    if is_local and not Path(DB_PATH).exists():
         return None, None, None
 
     for attempt in range(5):
         try:
-            conn = duckdb.connect(DB_PATH, read_only=True)
+            conn = duckdb.connect(DB_PATH, read_only=(is_local and not bool(_token)))
             break
         except Exception:
             if attempt == 4:
@@ -92,13 +143,44 @@ def load_data():
 
 
 # ── UI ─────────────────────────────────────────────────────────────────────────
-st.title("🔍 Job Extraction Pipeline — Dashboard")
+st.title("🔍 LinkedIn Job Listings")
 
-col_refresh, col_status = st.columns([1, 5])
-with col_refresh:
-    if st.button("Refresh data"):
-        st.cache_data.clear()
-        st.rerun()
+col_btn, col_last = st.columns([1, 5])
+
+with col_btn:
+    refresh = st.button("Refresh Data", type="primary")
+
+last = st.session_state.get("last_refreshed", datetime.datetime.now())
+with col_last:
+    st.markdown(
+        f"<p style='color: #888; font-size: 0.75rem; margin-top: 8px;'>"
+        f"Last refreshed: {last.strftime('%b %d, %Y at %I:%M %p')}</p>",
+        unsafe_allow_html=True,
+    )
+
+if refresh:
+    run_id = trigger_dag()
+    if not run_id:
+        st.error("Could not connect to Airflow. Make sure it's running at localhost:8080.")
+    else:
+        status_box = st.empty()
+        with st.spinner("Scraping LinkedIn, extracting with Claude..."):
+            for _ in range(120):
+                state = get_dag_run_status(run_id)
+                status_box.caption(f"Pipeline status: **{state}**")
+                if state == "success":
+                    st.success("Done! Dashboard updated with new jobs.")
+                    st.cache_data.clear()
+                    st.session_state["last_refreshed"] = datetime.datetime.now()
+                    time.sleep(1)
+                    st.rerun()
+                    break
+                elif state == "failed":
+                    st.error("Pipeline failed. Check Airflow logs at localhost:8080.")
+                    break
+                time.sleep(10)
+            else:
+                st.warning("Pipeline is taking longer than expected. Check Airflow UI.")
 
 postings, review, daily = load_data()
 
@@ -129,31 +211,7 @@ c6.metric("Est. API Cost",   f"${est_cost}")
 
 st.divider()
 
-# ── Row 1: Daily throughput + Confidence distribution ──────────────────────────
-col_left, col_right = st.columns(2)
-
-with col_left:
-    st.subheader("Daily Records Loaded")
-    if daily:
-        fig = px.bar(
-            x=[d["day"] for d in daily],
-            y=[d["records"] for d in daily],
-            labels={"x": "", "y": "Records"},
-            color_discrete_sequence=["#4C78A8"],
-        )
-        fig.update_layout(margin=dict(t=10))
-        st.plotly_chart(fig, use_container_width=True)
-
-with col_right:
-    st.subheader("Confidence Score Distribution")
-    scores = [p["confidence_score"] for p in postings]
-    fig = px.histogram(x=scores, nbins=10, labels={"x": "Confidence score", "y": "Count"},
-                       color_discrete_sequence=["#72B7B2"])
-    fig.add_vline(x=0.75, line_dash="dash", line_color="red", annotation_text="Review threshold")
-    fig.update_layout(margin=dict(t=10))
-    st.plotly_chart(fig, use_container_width=True)
-
-# ── Row 2: Salary ranges + Seniority breakdown ─────────────────────────────────
+# ── Row 1: Salary ranges + Seniority breakdown ─────────────────────────────────
 col_left2, col_right2 = st.columns(2)
 
 with col_left2:
@@ -205,6 +263,7 @@ if all_skills:
 st.divider()
 
 # ── Row 4: All postings table ──────────────────────────────────────────────────
+
 st.subheader("All Extracted Postings")
 table_rows = []
 for p in postings:
@@ -233,6 +292,7 @@ st.dataframe(
 # ── Row 5: Review queue ────────────────────────────────────────────────────────
 st.divider()
 st.subheader(f"Review Queue ({total_review} records)")
+
 
 if not review:
     st.success("Review queue is empty — all records passed quality checks.")
@@ -317,3 +377,28 @@ else:
                         st.rerun()
                     except Exception as e:
                         st.error(f"Error: {e}")
+
+# ── Row 6: Daily throughput + Confidence distribution ──────────────────────────
+st.divider()
+col_left, col_right = st.columns(2)
+
+with col_left:
+    st.subheader("Daily Records Loaded")
+    if daily:
+        fig = px.bar(
+            x=[d["day"] for d in daily],
+            y=[d["records"] for d in daily],
+            labels={"x": "", "y": "Records"},
+            color_discrete_sequence=["#4C78A8"],
+        )
+        fig.update_layout(margin=dict(t=10))
+        st.plotly_chart(fig, use_container_width=True)
+
+with col_right:
+    st.subheader("Confidence Score Distribution")
+    scores = [p["confidence_score"] for p in postings]
+    fig = px.histogram(x=scores, nbins=10, labels={"x": "Confidence score", "y": "Count"},
+                       color_discrete_sequence=["#72B7B2"])
+    fig.add_vline(x=0.75, line_dash="dash", line_color="red", annotation_text="Review threshold")
+    fig.update_layout(margin=dict(t=10))
+    st.plotly_chart(fig, use_container_width=True)

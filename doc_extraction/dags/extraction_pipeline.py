@@ -41,7 +41,8 @@ def scrape_jobs(**context):
     if not apify_token:
         raise ValueError("APIFY_API_TOKEN environment variable not set")
 
-    db_path = os.environ.get("DUCKDB_PATH", "/opt/airflow/doc_extraction/pipeline.duckdb")
+    md_token = os.environ.get("MOTHERDUCK_TOKEN")
+    db_path = f"md:job_pipeline?motherduck_token={md_token}" if md_token else os.environ.get("DUCKDB_PATH", "/opt/airflow/doc_extraction/pipeline.duckdb")
     input_dir = Path(WATCH_DIR)
     input_dir.mkdir(parents=True, exist_ok=True)
 
@@ -91,13 +92,17 @@ def scrape_jobs(**context):
 
     # ── Load known URLs from DuckDB ───────────────────────────────────────────
     known_urls = set()
-    if Path(db_path).exists():
-        conn = duckdb.connect(db_path, read_only=True)
-        rows = conn.execute("SELECT source_url FROM job_postings WHERE source_url IS NOT NULL").fetchall()
-        known_urls = {r[0] for r in rows}
-        rows2 = conn.execute("SELECT source_url FROM job_postings_review WHERE source_url IS NOT NULL").fetchall()
-        known_urls |= {r[0] for r in rows2}
-        conn.close()
+    is_local = not db_path.startswith("md:")
+    if not is_local or Path(db_path).exists():
+        try:
+            conn = duckdb.connect(db_path, read_only=is_local)
+            rows = conn.execute("SELECT source_url FROM job_postings WHERE source_url IS NOT NULL").fetchall()
+            known_urls = {r[0] for r in rows}
+            rows2 = conn.execute("SELECT source_url FROM job_postings_review WHERE source_url IS NOT NULL").fetchall()
+            known_urls |= {r[0] for r in rows2}
+            conn.close()
+        except Exception as e:
+            print(f"Could not load known URLs from DB (will process all): {e}")
     print(f"Known URLs in DB: {len(known_urls)}")
 
     # ── Write only new postings to data/input/ ────────────────────────────────

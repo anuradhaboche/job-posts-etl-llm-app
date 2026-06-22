@@ -19,7 +19,11 @@ from quality.quality_checker import QualityResult
 load_dotenv()
 logger = logging.getLogger(__name__)
 
-DB_PATH = os.getenv("DUCKDB_PATH", str(Path(__file__).parent.parent / "pipeline.duckdb"))
+_token = os.getenv("MOTHERDUCK_TOKEN")
+if _token:
+    DB_PATH = f"md:job_pipeline?motherduck_token={_token}"
+else:
+    DB_PATH = os.getenv("DUCKDB_PATH", str(Path(__file__).parent.parent / "pipeline.duckdb"))
 SCHEMA_PATH = Path(__file__).parent.parent / "sql" / "create_tables_duckdb.sql"
 
 
