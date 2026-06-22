@@ -48,15 +48,18 @@ st.set_page_config(
 def load_data():
     is_local = not DB_PATH.startswith("md:")
     if is_local and not Path(DB_PATH).exists():
-        return None, None, None
+        return None, None, None, "no-db-file"
 
+    last_err = None
+    conn = None
     for attempt in range(5):
         try:
             conn = duckdb.connect(DB_PATH, read_only=(is_local and not bool(_token)))
             break
-        except Exception:
+        except Exception as e:
+            last_err = e
             if attempt == 4:
-                return None, None, None
+                return None, None, None, str(e)
             time.sleep(2)
 
     postings = conn.execute("""
@@ -105,6 +108,7 @@ def load_data():
         to_dict(postings, cols),
         to_dict(review, ["job_title","company","confidence_score","failure_reasons","loaded_at","source_url"]),
         to_dict(daily, ["day","records","avg_confidence","total_tokens"]),
+        None,
     )
 
 
@@ -129,10 +133,18 @@ if refresh:
     st.session_state["last_refreshed"] = datetime.datetime.now()
     st.rerun()
 
-postings, review, daily = load_data()
+postings, review, daily, err = load_data()
 
 if postings is None:
-    st.error("Database locked or not found. Disconnect DBeaver/VS Code DB client and refresh.")
+    if not _token:
+        st.error(
+            "No MotherDuck token found. On Streamlit Cloud, add **MOTHERDUCK_TOKEN** "
+            "under Manage app → Settings → Secrets. Running locally, set it in your `.env`."
+        )
+    elif err == "no-db-file":
+        st.error("Local DuckDB file not found. Run the pipeline first to create it.")
+    else:
+        st.error(f"Could not connect to the database. Details: `{err}`")
     st.stop()
 
 if len(postings) == 0:
