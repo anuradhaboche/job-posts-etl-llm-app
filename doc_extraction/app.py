@@ -141,6 +141,11 @@ if postings is None:
             "No MotherDuck token found. On Streamlit Cloud, add **MOTHERDUCK_TOKEN** "
             "under Manage app → Settings → Secrets. Running locally, set it in your `.env`."
         )
+        try:
+            keys = list(st.secrets.keys())
+        except Exception:
+            keys = []
+        st.caption(f"Secret keys the app can currently see: {keys or 'none'}")
     elif err == "no-db-file":
         st.error("Local DuckDB file not found. Run the pipeline first to create it.")
     else:
