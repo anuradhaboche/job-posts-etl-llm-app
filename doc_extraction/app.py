@@ -11,9 +11,7 @@ import time
 import datetime
 from pathlib import Path
 from collections import Counter
-from typing import Optional
 
-import requests
 import duckdb
 import streamlit as st
 import plotly.express as px
@@ -37,38 +35,6 @@ if _token:
 else:
     DB_PATH = _secret("DUCKDB_PATH", str(Path(__file__).parent / "pipeline.duckdb"))
 
-AIRFLOW_URL  = os.getenv("AIRFLOW_URL", "http://localhost:8080")
-AIRFLOW_USER = os.getenv("AIRFLOW_USER", "airflow")
-AIRFLOW_PASS = os.getenv("AIRFLOW_PASS", "airflow")
-DAG_ID       = "doc_extraction_pipeline"
-
-
-def trigger_dag() -> Optional[str]:
-    """Trigger the Airflow DAG and return the run_id."""
-    try:
-        resp = requests.post(
-            f"{AIRFLOW_URL}/api/v1/dags/{DAG_ID}/dagRuns",
-            json={},
-            auth=(AIRFLOW_USER, AIRFLOW_PASS),
-            timeout=10,
-        )
-        resp.raise_for_status()
-        return resp.json()["dag_run_id"]
-    except Exception as e:
-        return None, str(e)
-
-
-def get_dag_run_status(run_id: str) -> str:
-    """Poll Airflow for the current DAG run state."""
-    try:
-        resp = requests.get(
-            f"{AIRFLOW_URL}/api/v1/dags/{DAG_ID}/dagRuns/{run_id}",
-            auth=(AIRFLOW_USER, AIRFLOW_PASS),
-            timeout=10,
-        )
-        return resp.json().get("state", "unknown")
-    except Exception:
-        return "unknown"
 
 st.set_page_config(
     page_title="LinkedIn Job Listings",
@@ -148,7 +114,7 @@ st.title("🔍 LinkedIn Job Listings")
 col_btn, col_last = st.columns([1, 5])
 
 with col_btn:
-    refresh = st.button("Refresh Data", type="primary")
+    refresh = st.button("↻ Refresh Data", type="primary")
 
 last = st.session_state.get("last_refreshed", datetime.datetime.now())
 with col_last:
@@ -159,28 +125,9 @@ with col_last:
     )
 
 if refresh:
-    run_id = trigger_dag()
-    if not run_id:
-        st.error("Could not connect to Airflow. Make sure it's running at localhost:8080.")
-    else:
-        status_box = st.empty()
-        with st.spinner("Scraping LinkedIn, extracting with Claude..."):
-            for _ in range(120):
-                state = get_dag_run_status(run_id)
-                status_box.caption(f"Pipeline status: **{state}**")
-                if state == "success":
-                    st.success("Done! Dashboard updated with new jobs.")
-                    st.cache_data.clear()
-                    st.session_state["last_refreshed"] = datetime.datetime.now()
-                    time.sleep(1)
-                    st.rerun()
-                    break
-                elif state == "failed":
-                    st.error("Pipeline failed. Check Airflow logs at localhost:8080.")
-                    break
-                time.sleep(10)
-            else:
-                st.warning("Pipeline is taking longer than expected. Check Airflow UI.")
+    st.cache_data.clear()
+    st.session_state["last_refreshed"] = datetime.datetime.now()
+    st.rerun()
 
 postings, review, daily = load_data()
 
